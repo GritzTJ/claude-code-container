@@ -67,7 +67,7 @@ docker compose up -d
 ./run.sh
 ```
 
-Permet de lancer plusieurs conteneurs indépendants avec choix du nom et du type de stockage (bind mount ou volume Docker).
+Permet de lancer plusieurs conteneurs indépendants avec choix du nom et de la persistance (sans persistance, bind mount ou volume Docker).
 
 ### Déployer sur un autre serveur
 
@@ -183,7 +183,7 @@ docker compose up -d
 ./run.sh
 ```
 
-Launches multiple independent containers with a choice of name and storage type (bind mount or Docker volume).
+Launches multiple independent containers with a choice of name and persistence (no persistence, bind mount, or Docker volume).
 
 ### Deploy to another server
 
