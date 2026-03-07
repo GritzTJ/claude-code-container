@@ -55,6 +55,8 @@ echo "[1/6] Création des fichiers..."
 cat > "$WORK_DIR/entrypoint.sh" << 'ENTRYPOINT'
 #!/bin/sh
 chown node:node /workspace
+# Rendre les tokens accessibles à root et node (volume partagé)
+chmod 666 /root/.claude/.credentials.json 2>/dev/null || true
 exec gosu node "$@"
 ENTRYPOINT
 chmod +x "$WORK_DIR/entrypoint.sh"
@@ -81,8 +83,13 @@ services:
       - TZ=Europe/Paris
     volumes:
       - ${PROJECT_DIR:-./claude-data}:/workspace
+      - claude-auth:/root/.claude
+      - claude-auth:/home/node/.claude
     working_dir: /workspace
     command: ["sleep", "infinity"]
+
+volumes:
+  claude-auth:
 COMPOSE
 
 cat > "$WORK_DIR/.dockerignore" << 'DOCKERIGNORE'
