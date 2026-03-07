@@ -320,12 +320,18 @@ DOCKER_BUILDKIT=1 docker build \
 # -------------------------------------------------------
 # Suppression des fichiers d'auth temporaires
 # -------------------------------------------------------
-echo "[6/6] Suppression des fichiers d'authentification..."
+echo "[6/6] Nettoyage et initialisation du volume d'authentification..."
 
 rm -f "$WORK_DIR/auth/.credentials.json" "$WORK_DIR/auth/.claude.json"
 rmdir "$WORK_DIR/auth" 2>/dev/null || true
 rm -f "$WORK_DIR/Dockerfile.base"
 docker rmi "$BASE_IMAGE" > /dev/null 2>&1 || true
+
+# Initialiser le volume claude-auth avec les tokens de l'image
+docker run --rm \
+    -v claude-auth:/root/.claude \
+    -v claude-auth:/home/node/.claude \
+    "$FINAL_IMAGE" true > /dev/null
 
 echo ""
 echo "=== Installation terminée ==="

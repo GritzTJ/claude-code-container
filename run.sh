@@ -18,13 +18,16 @@ if [[ ! "$container_name" =~ ^[a-zA-Z0-9][a-zA-Z0-9_.-]*$ ]]; then
     exit 1
 fi
 
-# Type de volume
+# Persistance de /workspace
 echo ""
-echo "Type de stockage pour /workspace :"
+echo "Persistance de /workspace :"
 echo "  1) Bind mount  — dossier du serveur monté dans le conteneur (défaut)"
-echo "  2) Volume Docker — volume géré par Docker (supprimé avec le conteneur)"
-read -rp "Choix (1/2) : " volume_type
+echo "  2) Volume Docker — volume géré par Docker"
+echo "  3) Aucune — /workspace éphémère (perdu à la suppression du conteneur)"
+read -rp "Choix (1/2/3) : " volume_type
 volume_type="${volume_type:-1}"
+
+volume_arg=""
 
 case "$volume_type" in
     1)
@@ -43,6 +46,8 @@ case "$volume_type" in
         volume_name="${container_name}-data"
         volume_arg="$volume_name:/workspace"
         ;;
+    3)
+        ;;
     *)
         echo "Erreur : choix invalide." >&2
         exit 1
@@ -50,15 +55,26 @@ case "$volume_type" in
 esac
 
 # Lancement
-docker run -d \
-    --name "$container_name" \
-    -e TZ=Europe/Paris \
-    -v "$volume_arg" \
-    -v claude-auth:/root/.claude \
-    -v claude-auth:/home/node/.claude \
-    -w /workspace \
-    "$IMAGE" \
-    sleep infinity
+if [ -n "$volume_arg" ]; then
+    docker run -d \
+        --name "$container_name" \
+        -e TZ=Europe/Paris \
+        -v "$volume_arg" \
+        -v claude-auth:/root/.claude \
+        -v claude-auth:/home/node/.claude \
+        -w /workspace \
+        "$IMAGE" \
+        sleep infinity
+else
+    docker run -d \
+        --name "$container_name" \
+        -e TZ=Europe/Paris \
+        -v claude-auth:/root/.claude \
+        -v claude-auth:/home/node/.claude \
+        -w /workspace \
+        "$IMAGE" \
+        sleep infinity
+fi
 
 echo ""
 echo "Conteneur '$container_name' démarré."
