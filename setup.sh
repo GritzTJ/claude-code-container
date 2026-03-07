@@ -278,6 +278,7 @@ RUN apt-get update && apt-get install -y git curl ripgrep gosu locales \
     && rm -rf /var/lib/apt/lists/* \
     && sed -i '/fr_FR.UTF-8/s/^# //' /etc/locale.gen && locale-gen
 ENV LANG=fr_FR.UTF-8 LC_ALL=fr_FR.UTF-8
+ENV TZ=Europe/Paris
 
 RUN npm install -g @anthropic-ai/claude-code
 
@@ -302,6 +303,7 @@ ENTRYPOINT ["/entrypoint.sh"]
 DOCKERFILE
 
 DOCKER_BUILDKIT=1 docker build \
+    --no-cache \
     --secret "id=credentials,src=$WORK_DIR/auth/.credentials.json" \
     --secret "id=claude_json,src=$WORK_DIR/auth/.claude.json" \
     -t "$FINAL_IMAGE" \
