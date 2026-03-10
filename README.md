@@ -14,8 +14,10 @@ Deux scripts pour exécuter Claude Code dans un conteneur Docker isolé, avec au
 |---|---|
 | **Isolation complète** | Claude Code tourne dans un conteneur — rien n'est installé sur l'hôte |
 | **Authentification sécurisée** | Les identifiants sont intégrés via BuildKit secret mounts, invisibles dans les layers Docker |
+| **Tokens persistants** | Les tokens OAuth rafraîchis sont persistés dans un volume Docker partagé (`claude-auth`) |
 | **Instances multiples** | Lancez autant de conteneurs que nécessaire, chacun sur un projet différent |
 | **Mode autonome** | `claude-auto` exécute sans confirmation, en toute sécurité grâce à l'isolation |
+| **Outils pré-installés** | python3, git, jq, ffsend, curl, wget, ripgrep, nano, make, zip, openssh-client, etc. |
 
 ### Installation
 
@@ -33,9 +35,9 @@ Le script `setup.sh` :
 3. Lance un conteneur temporaire pour se connecter (`claude login`)
 4. Configure les serveurs MCP (datagouv, context7 optionnel, et serveurs personnalisés)
 5. Build l'image finale avec les identifiants intégrés via BuildKit secret mounts
-6. Supprime les fichiers d'authentification temporaires
+6. Supprime les fichiers d'authentification temporaires et initialise le volume `claude-auth`
 
-Les identifiants ne sont ni sur le disque, ni dans les layers Docker.
+Les identifiants ne sont ni sur le disque, ni dans les layers Docker. Les tokens rafraîchis sont persistés dans le volume Docker `claude-auth`.
 
 ### Pré-requis
 
@@ -93,8 +95,9 @@ ssh user@serveur "gunzip -c ~/claude-code.tar.gz | docker load"
 
 - Les identifiants sont intégrés via **BuildKit secret mounts** : invisibles dans les layers Docker, mais l'image reste sensible — **ne pas la pousser sur un registry public**
 - `claude-auto` exécute sans confirmation : isolé dans le conteneur, mais `/workspace` affecte le système hôte
-- Les tokens sont renouvelés automatiquement via le refresh token
+- Les tokens sont renouvelés automatiquement via le refresh token ; les tokens rafraîchis sont persistés dans le volume Docker `claude-auth` (partagé entre tous les conteneurs)
 - Les fichiers d'authentification temporaires sont supprimés après le build
+- Le hostname du conteneur correspond à son nom
 
 ### Structure
 
@@ -130,8 +133,10 @@ Two scripts to run Claude Code in an isolated Docker container, with built-in au
 |---|---|
 | **Full isolation** | Claude Code runs inside a container — nothing is installed on the host |
 | **Secure authentication** | Credentials are embedded via BuildKit secret mounts, invisible in Docker layers |
+| **Persistent tokens** | Refreshed OAuth tokens are persisted in a shared Docker volume (`claude-auth`) |
 | **Multiple instances** | Spin up as many containers as needed, each working on a different project |
 | **Autonomous mode** | `claude-auto` runs without confirmation, safely thanks to isolation |
+| **Pre-installed tools** | python3, git, jq, ffsend, curl, wget, ripgrep, nano, make, zip, openssh-client, etc. |
 
 ### Installation
 
@@ -149,9 +154,9 @@ The `setup.sh` script:
 3. Starts a temporary container to log in (`claude login`)
 4. Configures MCP servers (datagouv, optional context7, and custom servers)
 5. Builds the final image with credentials via BuildKit secret mounts
-6. Removes temporary authentication files
+6. Removes temporary authentication files and initializes the `claude-auth` volume
 
-Credentials are neither on disk nor in Docker layers.
+Credentials are neither on disk nor in Docker layers. Refreshed tokens are persisted in the `claude-auth` Docker volume.
 
 ### Prerequisites
 
@@ -209,8 +214,9 @@ ssh user@server "gunzip -c ~/claude-code.tar.gz | docker load"
 
 - Credentials are embedded via **BuildKit secret mounts**: invisible in Docker layers, but the image is sensitive — **do not push to a public registry**
 - `claude-auto` runs without confirmation: isolated in the container, but `/workspace` affects the host filesystem
-- Tokens are automatically renewed via the refresh token
+- Tokens are automatically renewed via the refresh token; refreshed tokens are persisted in the `claude-auth` Docker volume (shared across all containers)
 - Temporary authentication files are deleted after the build
+- Container hostname matches the container name
 
 ### Structure
 
