@@ -63,9 +63,14 @@ chmod +x "$WORK_DIR/entrypoint.sh"
 
 cat > "$WORK_DIR/Dockerfile.base" << 'DOCKERFILE'
 FROM node:22-slim
-RUN apt-get update && apt-get install -y git curl ripgrep gosu locales \
+RUN apt-get update && apt-get install -y \
+        git curl wget ripgrep gosu locales \
+        python3 python3-venv \
+        jq less tree nano make zip unzip openssh-client \
     && rm -rf /var/lib/apt/lists/* \
     && sed -i '/fr_FR.UTF-8/s/^# //' /etc/locale.gen && locale-gen
+RUN curl -fsSL https://github.com/timvisee/ffsend/releases/latest/download/ffsend-v0.2.76-linux-x64-static -o /usr/local/bin/ffsend \
+    && chmod +x /usr/local/bin/ffsend
 ENV LANG=fr_FR.UTF-8 LC_ALL=fr_FR.UTF-8
 RUN npm install -g @anthropic-ai/claude-code
 WORKDIR /workspace
@@ -77,6 +82,7 @@ services:
     build: .
     image: claude-code
     container_name: claude-code
+    hostname: claude-code
     stdin_open: true
     tty: true
     environment:
@@ -281,9 +287,14 @@ cat > "$WORK_DIR/Dockerfile" << 'DOCKERFILE'
 # syntax=docker/dockerfile:1
 FROM node:22-slim
 
-RUN apt-get update && apt-get install -y git curl ripgrep gosu locales \
+RUN apt-get update && apt-get install -y \
+        git curl wget ripgrep gosu locales \
+        python3 python3-venv \
+        jq less tree nano make zip unzip openssh-client \
     && rm -rf /var/lib/apt/lists/* \
     && sed -i '/fr_FR.UTF-8/s/^# //' /etc/locale.gen && locale-gen
+RUN curl -fsSL https://github.com/timvisee/ffsend/releases/latest/download/ffsend-v0.2.76-linux-x64-static -o /usr/local/bin/ffsend \
+    && chmod +x /usr/local/bin/ffsend
 ENV LANG=fr_FR.UTF-8 LC_ALL=fr_FR.UTF-8
 ENV TZ=Europe/Paris
 

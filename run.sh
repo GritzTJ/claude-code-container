@@ -58,6 +58,7 @@ esac
 if [ -n "$volume_arg" ]; then
     docker run -d \
         --name "$container_name" \
+        --hostname "$container_name" \
         -e TZ=Europe/Paris \
         -v "$volume_arg" \
         -v claude-auth:/root/.claude \
@@ -68,6 +69,7 @@ if [ -n "$volume_arg" ]; then
 else
     docker run -d \
         --name "$container_name" \
+        --hostname "$container_name" \
         -e TZ=Europe/Paris \
         -v claude-auth:/root/.claude \
         -v claude-auth:/home/node/.claude \
