@@ -69,7 +69,7 @@ RUN apt-get update && apt-get install -y \
         jq less tree nano make zip unzip openssh-client \
     && rm -rf /var/lib/apt/lists/* \
     && sed -i '/fr_FR.UTF-8/s/^# //' /etc/locale.gen && locale-gen
-RUN curl -fsSL https://github.com/timvisee/ffsend/releases/latest/download/ffsend-v0.2.76-linux-x64-static -o /usr/local/bin/ffsend \
+RUN curl -fsSL https://github.com/timvisee/ffsend/releases/latest/download/ffsend-v0.2.77-linux-x64-static -o /usr/local/bin/ffsend \
     && chmod +x /usr/local/bin/ffsend
 ENV LANG=fr_FR.UTF-8 LC_ALL=fr_FR.UTF-8
 RUN npm install -g @anthropic-ai/claude-code
@@ -112,7 +112,7 @@ DOCKERIGNORE
 # Étape 2 : Build de l'image de base (sans auth)
 # -------------------------------------------------------
 echo "[2/6] Build de l'image de base..."
-docker build -t "$BASE_IMAGE" -f "$WORK_DIR/Dockerfile.base" "$WORK_DIR" -q
+docker build -t "$BASE_IMAGE" -f "$WORK_DIR/Dockerfile.base" "$WORK_DIR"
 
 # -------------------------------------------------------
 # Étape 3 : Login interactif
@@ -293,7 +293,7 @@ RUN apt-get update && apt-get install -y \
         jq less tree nano make zip unzip openssh-client \
     && rm -rf /var/lib/apt/lists/* \
     && sed -i '/fr_FR.UTF-8/s/^# //' /etc/locale.gen && locale-gen
-RUN curl -fsSL https://github.com/timvisee/ffsend/releases/latest/download/ffsend-v0.2.76-linux-x64-static -o /usr/local/bin/ffsend \
+RUN curl -fsSL https://github.com/timvisee/ffsend/releases/latest/download/ffsend-v0.2.77-linux-x64-static -o /usr/local/bin/ffsend \
     && chmod +x /usr/local/bin/ffsend
 ENV LANG=fr_FR.UTF-8 LC_ALL=fr_FR.UTF-8
 ENV TZ=Europe/Paris
@@ -326,7 +326,7 @@ DOCKER_BUILDKIT=1 docker build \
     --secret "id=claude_json,src=$WORK_DIR/auth/.claude.json" \
     -t "$FINAL_IMAGE" \
     -f "$WORK_DIR/Dockerfile" \
-    "$WORK_DIR" -q
+    "$WORK_DIR"
 
 # -------------------------------------------------------
 # Suppression des fichiers d'auth temporaires
