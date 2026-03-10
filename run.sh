@@ -31,8 +31,8 @@ volume_arg=""
 
 case "$volume_type" in
     1)
-        read -rp "Dossier à monter dans /workspace (défaut: ./claude-data) : " project_dir
-        project_dir="${project_dir:-./claude-data}"
+        read -rp "Dossier à monter dans /workspace (défaut: ./$container_name) : " project_dir
+        project_dir="${project_dir:-./$container_name}"
 
         mkdir -p "$project_dir"
         project_dir_abs="$(cd "$project_dir" && pwd)" || {
